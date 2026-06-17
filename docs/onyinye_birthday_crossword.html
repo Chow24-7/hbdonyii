@@ -1,0 +1,170 @@
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: transparent; display: flex; justify-content: center; padding: 8px 0; }
+  canvas { display: block; max-width: 100%; }
+</style>
+<canvas id="cw" width="580" height="700"></canvas>
+<script>
+const cv = document.getElementById('cw');
+const g = cv.getContext('2d');
+const C = 38, MX = 32, MY = 54;
+
+/*
+  CROSSWORD LAYOUT (verified intersections):
+  ONYINYE     ACROSS  row 2  cols 5-11
+  BEAUTIFUL   ACROSS  row 3  cols 2-10
+  FASHIONISTA ACROSS  row 7  cols 2-12
+  INTELLIGENT DOWN    col 6  rows 1-11
+  SUNSHINE    DOWN    col 10 rows 4-11
+  LOVE        DOWN    col 7  rows 6-9
+  KIND        DOWN    col 9  rows 6-9
+
+  Intersections:
+  (2,6)  ONYINYE[N]     x INTELLIGENT[N]   N=N ✓
+  (3,6)  BEAUTIFUL[T]   x INTELLIGENT[T]   T=T ✓
+  (7,6)  FASHIONISTA[I] x INTELLIGENT[I]   I=I ✓
+  (7,7)  FASHIONISTA[O] x LOVE[O]          O=O ✓
+  (7,9)  FASHIONISTA[I] x KIND[I]          I=I ✓
+  (7,10) FASHIONISTA[S] x SUNSHINE[S]      S=S ✓
+*/
+
+const cells = {
+  '1,6':{l:'I',n:1},
+  '2,5':{l:'O',n:2},'2,6':{l:'N'},'2,7':{l:'Y'},'2,8':{l:'I'},'2,9':{l:'N'},'2,10':{l:'Y'},'2,11':{l:'E'},
+  '3,2':{l:'B',n:3},'3,3':{l:'E'},'3,4':{l:'A'},'3,5':{l:'U'},'3,6':{l:'T'},'3,7':{l:'I'},'3,8':{l:'F'},'3,9':{l:'U'},'3,10':{l:'L'},
+  '4,6':{l:'E'},'4,10':{l:'S',n:4},
+  '5,6':{l:'L'},'5,10':{l:'U'},
+  '6,6':{l:'L'},'6,7':{l:'L',n:5},'6,9':{l:'K',n:6},'6,10':{l:'N'},
+  '7,2':{l:'F',n:7},'7,3':{l:'A'},'7,4':{l:'S'},'7,5':{l:'H'},'7,6':{l:'I'},'7,7':{l:'O'},'7,8':{l:'N'},'7,9':{l:'I'},'7,10':{l:'S'},'7,11':{l:'T'},'7,12':{l:'A'},
+  '8,6':{l:'G'},'8,7':{l:'V'},'8,9':{l:'N'},'8,10':{l:'H'},
+  '9,6':{l:'E'},'9,7':{l:'E'},'9,9':{l:'D'},'9,10':{l:'I'},
+  '10,6':{l:'N'},'10,10':{l:'N'},
+  '11,6':{l:'T'},'11,10':{l:'E'}
+};
+
+const ix = new Set(['2,6','3,6','7,6','7,7','7,9','7,10']);
+
+// --- BACKGROUND ---
+g.fillStyle = '#0B0017';
+g.fillRect(0, 0, 580, 700);
+
+// --- OUTER FRAME ---
+g.strokeStyle = '#5B1E90';
+g.lineWidth = 2;
+g.strokeRect(10, 8, 560, 684);
+
+// --- CORNER STARS ---
+g.fillStyle = '#FF78C0';
+g.font = '11px Arial';
+g.textAlign = 'center';
+g.textBaseline = 'middle';
+[[16,16],[564,16],[16,692],[564,692]].forEach(([x,y]) => g.fillText('*', x, y));
+
+// --- TITLE ---
+g.fillStyle = '#FF78C0';
+g.font = 'bold 15px Arial';
+g.textAlign = 'center';
+g.textBaseline = 'alphabetic';
+g.fillText("ONYINYE'S BIRTHDAY CROSSWORD", 290, 28);
+g.fillStyle = '#9B70CC';
+g.font = '10px Arial';
+g.fillText('All the beautiful words that describe her', 290, 43);
+
+g.beginPath(); g.moveTo(22,49); g.lineTo(558,49);
+g.strokeStyle = '#3C006A'; g.lineWidth = 0.8; g.stroke();
+
+// --- GRID CELLS ---
+Object.entries(cells).forEach(([key, cell]) => {
+  const [r, c] = key.split(',').map(Number);
+  const x = MX + (c - 1) * C;
+  const y = MY + r * C;
+  const isX = ix.has(key);
+
+  // Cell fill
+  g.fillStyle = isX ? '#FFD4F2' : '#ECE0FF';
+  g.fillRect(x, y, C, C);
+
+  // Cell border
+  g.strokeStyle = isX ? '#D81B60' : '#7E57C2';
+  g.lineWidth = 1;
+  g.strokeRect(x + 0.5, y + 0.5, C - 1, C - 1);
+
+  // Clue number (top-left)
+  if (cell.n) {
+    g.fillStyle = '#C2185B';
+    g.font = 'bold 8px Arial';
+    g.textAlign = 'left';
+    g.textBaseline = 'top';
+    g.fillText(String(cell.n), x + 2, y + 2);
+  }
+
+  // Letter (centred)
+  g.fillStyle = '#1A0035';
+  g.font = 'bold 16px Arial';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText(cell.l, x + C / 2, y + C / 2 + 1);
+});
+
+// Intersection legend dot
+g.fillStyle = '#FFD4F2';
+g.fillRect(22, 550, 10, 10);
+g.strokeStyle = '#D81B60'; g.lineWidth = 0.8; g.strokeRect(22.5, 550.5, 9, 9);
+g.fillStyle = '#9B70CC'; g.font = '8px Arial'; g.textAlign = 'left'; g.textBaseline = 'middle';
+g.fillText('= two words cross here', 36, 555);
+
+// --- LEGEND SEPARATOR ---
+const gB = MY + 13 * C; // 54 + 494 = 548
+const sepY = gB + 20;   // 568
+
+g.beginPath(); g.moveTo(22, sepY); g.lineTo(558, sepY);
+g.strokeStyle = '#3C006A'; g.lineWidth = 0.8; g.stroke();
+
+const lY = sepY + 16; // 584
+
+// --- LEGEND HEADERS ---
+g.fillStyle = '#FF78C0';
+g.font = 'bold 10px Arial';
+g.textAlign = 'left';
+g.textBaseline = 'alphabetic';
+g.fillText('ACROSS', 28, lY);
+g.fillText('DOWN', 304, lY);
+
+// --- ACROSS CLUES ---
+[
+  ['2', 'ONYINYE',     'The birthday girl'],
+  ['3', 'BEAUTIFUL',   'Inside and out'],
+  ['7', 'FASHIONISTA', 'Effortless style'],
+].forEach(([n, w, d], i) => {
+  const iy = lY + 14 + i * 14;
+  g.fillStyle = '#E91E8C'; g.font = 'bold 8.5px Arial';
+  g.fillText(n + '.', 28, iy);
+  g.fillStyle = '#C8A8E8'; g.font = '8.5px Arial';
+  g.fillText(w + '  \u2014  ' + d, 42, iy);
+});
+
+// --- DOWN CLUES ---
+[
+  ['1', 'INTELLIGENT', 'Sharp, brilliant mind'],
+  ['4', 'SUNSHINE',    'Brightens every room'],
+  ['5', 'LOVE',        'Her definition'],
+  ['6', 'KIND',        'Her beautiful heart'],
+].forEach(([n, w, d], i) => {
+  const iy = lY + 14 + i * 14;
+  g.fillStyle = '#E91E8C'; g.font = 'bold 8.5px Arial';
+  g.fillText(n + '.', 304, iy);
+  g.fillStyle = '#C8A8E8'; g.font = '8.5px Arial';
+  g.fillText(w + '  \u2014  ' + d, 318, iy);
+});
+
+// --- FOOTER ---
+const ftY = lY + 14 + 4 * 14 + 16; // ~662
+g.beginPath(); g.moveTo(22, ftY - 8); g.lineTo(558, ftY - 8);
+g.strokeStyle = '#3C006A'; g.lineWidth = 0.5; g.stroke();
+
+g.fillStyle = '#8050A8'; g.font = '8.5px Arial'; g.textAlign = 'center';
+g.fillText('Happy Birthday Onyinye!   Made with all my love, Chioma', 290, ftY + 5);
+g.fillStyle = '#5C3880';
+g.fillText('You are all of these things and so much more', 290, ftY + 19);
+</script>
