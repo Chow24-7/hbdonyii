@@ -448,24 +448,49 @@ export default function App() {
 
         <div className="divider">💕 💜 💕</div>
 
-        {/* ── CROSSWORD PUZZLE ── */}
+        {/* ── WORDS THAT DESCRIBE ONYINYE ── */}
         <div className="wrap">
-          <h2 className="sec-title">Birthday Crossword 🧩</h2>
-          <div style={{ 
-            width: "100%", 
-            maxWidth: "600px", 
+          <h2 className="sec-title">All These Words Describe Onyinye</h2>
+          <div style={{
+            width: "100%",
+            maxWidth: "600px",
             margin: "0 auto",
             borderRadius: "24px",
-            overflow: "hidden",
+            padding: "40px 30px",
+            background: "rgba(255,255,255,0.04)",
             border: "2px solid rgba(248,187,208,0.3)",
-            background: '#0B0017'
+            textAlign: "center"
           }}>
-            <canvas
-              ref={crosswordRef}
-              width={580}
-              height={700}
-              style={{ display: 'block', width: '100%', height: 'auto' }}
-            />
+            <p style={{
+              marginBottom: "26px",
+              color: "#F8BBD0",
+              fontSize: "1.05rem",
+              lineHeight: 1.8
+            }}>
+              All these words can be used to describe our amazing Onyinye.
+            </p>
+            <ul style={{
+              listStyle: "none",
+              margin: 0,
+              padding: 0,
+              display: "grid",
+              gridTemplateColumns: "repeat(2, minmax(140px, 1fr))",
+              gap: "16px",
+              color: "#F8BBD0"
+            }}>
+              {["ONYINYE","KIND","INTELLIGENT","BEAUTIFUL","FASHIONISTA","LOVE","SUNSHINE"].map(word => (
+                <li key={word} style={{
+                  padding: "18px 14px",
+                  borderRadius: "18px",
+                  border: "1px solid rgba(248,187,208,0.18)",
+                  background: "rgba(255,255,255,0.06)",
+                  fontWeight: 700,
+                  letterSpacing: "1px"
+                }}>
+                  {word}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
