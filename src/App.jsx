@@ -11,93 +11,7 @@ const balloons = [
 
 const COLORS = ["#FF4DB8","#A855F7","#F472B6","#C084FC","#E879F9","#FB7185","#FF69B4"];
 
-function CrosswordPuzzle() {
-  return (
-    <>
-      <h2 className="sec-title">Birthday Crossword 🧩</h2>
-      <p style={{ textAlign: "center", fontFamily: "'Dancing Script', cursive", fontSize: "1.1rem", color: "rgba(248,187,208,0.7)", marginBottom: "24px" }}>
-        See if you can find all these words that describe our amazing Onyinye!
-      </p>
-
-      {/* Static Crossword Image Placeholder */}
-      <div style={{ 
-        width: "100%", 
-        maxWidth: "550px", 
-        margin: "0 auto 32px",
-        aspectRatio: "1", 
-        background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(255,77,184,0.2))",
-        borderRadius: "24px",
-        border: "2px solid rgba(248,187,208,0.3)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px",
-        textAlign: "center"
-      }}>
-        <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🎉</div>
-        <p style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", fontSize: "1.6rem", marginBottom: "16px" }}>
-          Add Crossword Image Here
-        </p>
-        <p style={{ fontFamily: "'Dancing Script', cursive", color: "#F8BBD0", fontSize: "1.1rem" }}>
-          Replace this with a crossword image containing:
-        </p>
-        <ul style={{ 
-          listStyle: "none", 
-          padding: 0, 
-          marginTop: "20px", 
-          fontFamily: "'Montserrat', sans-serif", 
-          color: "rgba(248,187,208,0.95)",
-          lineHeight: "2.2"
-        }}>
-          <li><strong>ONYINYE</strong></li>
-          <li><strong>KIND</strong></li>
-          <li><strong>INTELLIGENT</strong></li>
-          <li><strong>BEAUTIFUL</strong></li>
-          <li><strong>FASHIONISTA</strong></li>
-          <li><strong>LOVE</strong></li>
-          <li><strong>SUNSHINE</strong></li>
-        </ul>
-      </div>
-
-      {/* Hints (unchanged) */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "32px", justifyContent: "center", alignItems: "flex-start" }}>
-        <div style={{ minWidth: "280px" }}>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", marginBottom: "12px", fontSize: "1.3rem" }}>Across</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              1. The beautiful birthday girl
-            </li>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              2. Your heart is so warm and generous
-            </li>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              3. You are the definition of genuine love
-            </li>
-          </ul>
-        </div>
-        <div style={{ minWidth: "280px" }}>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", marginBottom: "12px", fontSize: "1.3rem" }}>Down</h3>
-          <ul style={{ listStyle: "none", padding: 0 }}>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              1. Inside and out, you are stunning
-            </li>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              2. Your mind is brilliant and sharp
-            </li>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              3. You have impeccable style
-            </li>
-            <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-              4. You brighten every room you enter
-            </li>
-          </ul>
-        </div>
-      </div>
-    </>
-  );
-}
-
+// Swipe Gallery Component
 function SwipeGallery({ items, currentIndex, setCurrentIndex }) {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -135,49 +49,145 @@ function SwipeGallery({ items, currentIndex, setCurrentIndex }) {
   };
 
   return (
-    <div className="swipe-gallery">
-      <div 
-        className="swipe-container"
+    <div style={{ width: "100%", margin: "0 auto" }}>
+      <div style={{
+        position: "relative",
+        width: "100%",
+        maxWidth: "600px",
+        margin: "0 auto",
+        overflow: "hidden",
+        borderRadius: "24px",
+        aspectRatio: "3/4",
+        background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(255,77,184,0.2))",
+        border: "2px solid rgba(248,187,208,0.2)"
+      }}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
-        <button className="swipe-btn swipe-btn-prev" onClick={prevSlide} disabled={currentIndex === 0}>
+        <button 
+          onClick={prevSlide} 
+          disabled={currentIndex === 0}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "12px",
+            transform: "translateY(-50%)",
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            border: "none",
+            background: "rgba(255,77,184,0.8)",
+            color: "white",
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            zIndex: 10,
+            transition: "all 0.2s",
+            opacity: currentIndex === 0 ? 0.4 : 1
+          }}
+        >
           ‹
         </button>
         
-        <div className="swipe-track" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
+        <div style={{
+          display: "flex",
+          transition: "transform 0.3s ease",
+          height: "100%",
+          transform: `translateX(-${currentIndex * 100}%)`
+        }}>
           {items.map((item, index) => (
-            <div key={index} className="swipe-slide">
+            <div key={index} style={{
+              minWidth: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative"
+            }}>
               {item.src ? (
-                item.type === "image" ? (
-                  <img src={item.src} alt={`Onyinye ${index + 1}`} className="swipe-media" />
-                ) : (
-                  <video src={item.src} controls className="swipe-media" />
-                )
+                <img 
+                  src={item.src} 
+                  alt={`Onyinye ${index + 1}`} 
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                />
               ) : (
-                <div className="swipe-placeholder">
-                  <div style={{ fontSize: "3rem", marginBottom: "16px" }}>🌸</div>
+                <div style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "24px",
+                  textAlign: "center"
+                }}>
+                  <div style={{ fontSize: "2.2rem", marginBottom: "16px" }}>🌸</div>
                   <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1.5rem", color: "#F8BBD0" }}>Photo {index + 1}</p>
                   <p style={{ fontSize: "0.9rem", color: "rgba(248,187,208,0.6)", marginTop: "8px" }}>Add your beautiful photo here!</p>
                 </div>
               )}
-              <div className="swipe-counter">{index + 1} / {items.length}</div>
+              <div style={{
+                position: "absolute",
+                bottom: "16px",
+                right: "16px",
+                background: "rgba(0,0,0,0.6)",
+                color: "#F8BBD0",
+                padding: "6px 12px",
+                borderRadius: "16px",
+                fontSize: "0.9rem"
+              }}>
+                {index + 1} / {items.length}
+              </div>
             </div>
           ))}
         </div>
         
-        <button className="swipe-btn swipe-btn-next" onClick={nextSlide} disabled={currentIndex === items.length - 1}>
+        <button 
+          onClick={nextSlide} 
+          disabled={currentIndex === items.length - 1}
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "12px",
+            transform: "translateY(-50%)",
+            width: "48px",
+            height: "48px",
+            borderRadius: "50%",
+            border: "none",
+            background: "rgba(255,77,184,0.8)",
+            color: "white",
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            zIndex: 10,
+            transition: "all 0.2s",
+            opacity: currentIndex === items.length - 1 ? 0.4 : 1
+          }}
+        >
           ›
         </button>
       </div>
       
-      <div className="swipe-dots">
+      <div style={{
+        display: "flex",
+        gap: "8px",
+        justifyContent: "center",
+        marginTop: "20px",
+        flexWrap: "wrap"
+      }}>
         {items.map((_, index) => (
           <button
             key={index}
-            className={`swipe-dot ${index === currentIndex ? "active" : ""}`}
             onClick={() => setCurrentIndex(index)}
+            style={{
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              background: index === currentIndex ? "linear-gradient(135deg, #FF4DB8, #A855F7)" : "rgba(248,187,208,0.3)",
+              border: "none",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              transform: index === currentIndex ? "scale(1.3)" : "scale(1)"
+            }}
           />
         ))}
       </div>
@@ -185,14 +195,14 @@ function SwipeGallery({ items, currentIndex, setCurrentIndex }) {
   );
 }
 
-function App() {
+export default function App() {
   const [popped, setPopped] = useState(new Set());
   const [letterOpen, setLetterOpen] = useState(false);
   const [confetti, setConfetti] = useState([]);
   const [hearts, setHearts] = useState([]);
   const [galleryItems, setGalleryItems] = useState([]);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const [popSound] = useState(new Audio("/ElevenLabs_Tiny_explosion_when_a_balloon_is_pricked_with_a_pin,_surprising_jolt.mp3"));
+  const [popSound] = useState(new Audio("./ElevenLabs_Tiny_explosion_when_a_balloon_is_pricked_with_a_pin,_surprising_jolt.mp3"));
 
   useEffect(() => {
     setConfetti(Array.from({ length: 70 }, (_, i) => ({
@@ -213,32 +223,24 @@ function App() {
       size: 14 + Math.random() * 22,
     })));
 
-    // Initialize with all 22 images
-    const initialItems = Array.from({ length: 22 }, (_, i) => {
+    // Initialize gallery items with 22 images
+    const items = Array.from({ length: 22 }, (_, i) => {
       const imgNum = i + 1;
       let src = "";
-      
       if (imgNum === 6) {
-        src = "/ontii6.jpeg";
+        src = "./ontii6.jpeg";
       } else {
-        src = `/onyii${imgNum}.jpeg`;
+        src = `./onyii${imgNum}.jpeg`;
       }
-      
-      return {
-        type: "image",
-        src: src,
-        index: imgNum
-      };
+      return { type: "image", src: src, index: imgNum };
     });
-    setGalleryItems(initialItems);
+    setGalleryItems(items);
   }, []);
 
   const handleBalloonPop = (index) => {
     if (!popped.has(index)) {
-      // Play pop sound
       popSound.currentTime = 0;
-      popSound.play();
-      // Mark balloon as popped
+      popSound.play().catch(e => console.log("Audio play error:", e));
       setPopped(new Set([...popped, index]));
     }
   };
@@ -327,99 +329,6 @@ function App() {
 
         .divider { text-align: center; padding: 20px; font-size: 1.4rem; letter-spacing: 12px; opacity: 0.35; }
 
-        /* Swipe Gallery Styles */
-        .swipe-gallery { width: 100%; margin: 0 auto; }
-        .swipe-container {
-          position: relative;
-          width: 100%;
-          max-width: 600px;
-          margin: 0 auto;
-          overflow: hidden;
-          border-radius: 24px;
-          aspect-ratio: 3/4;
-          background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(255,77,184,0.2));
-          border: 2px solid rgba(248,187,208,0.2);
-        }
-        .swipe-track {
-          display: flex;
-          transition: transform 0.3s ease;
-          height: 100%;
-        }
-        .swipe-slide {
-          min-width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-        }
-        .swipe-media {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .swipe-placeholder {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          text-align: center;
-        }
-        .swipe-counter {
-          position: absolute;
-          bottom: 16px;
-          right: 16px;
-          background: rgba(0,0,0,0.6);
-          color: #F8BBD0;
-          padding: 6px 12px;
-          border-radius: 16px;
-          font-size: 0.9rem;
-        }
-        .swipe-btn {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 48px;
-          height: 48px;
-          border-radius: 50%;
-          border: none;
-          background: rgba(255,77,184,0.8);
-          color: white;
-          font-size: 1.5rem;
-          cursor: pointer;
-          z-index: 10;
-          transition: all 0.2s;
-        }
-        .swipe-btn:hover { background: rgba(255,77,184,1); transform: translateY(-50%) scale(1.1); }
-        .swipe-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .swipe-btn-prev { left: 12px; }
-        .swipe-btn-next { right: 12px; }
-        .swipe-dots {
-          display: flex;
-          gap: 8px;
-          justify-content: center;
-          margin-top: 20px;
-          flex-wrap: wrap;
-        }
-        .swipe-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background: rgba(248,187,208,0.3);
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .swipe-dot.active {
-          background: linear-gradient(135deg, #FF4DB8, #A855F7);
-          transform: scale(1.3);
-        }
-        .swipe-dot:hover { background: rgba(248,187,208,0.6); }
-
-        /* Gallery Grid (for thumbnail view) */
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 32px; }
         .g-item {
           aspect-ratio: 1; border-radius: 16px; overflow: hidden;
@@ -430,29 +339,15 @@ function App() {
           cursor: pointer;
         }
         .g-item:hover { transform: scale(1.05); box-shadow: 0 8px 32px rgba(255,77,184,0.35); }
-        .g-item img { width: 100%; height: 100%; object-fit: cover; }
-        .g-ph { text-align: center; padding: 12px; }
+        .g-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
 
-        /* Video Grid */
         .vid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
         .vid-card {
           border-radius: 20px; overflow: hidden;
           background: rgba(168,85,247,0.15);
           border: 1.5px solid rgba(248,187,208,0.2);
         }
-        .vid-card video, .vid-card iframe { width: 100%; aspect-ratio: 16/9; display: block; }
-        .vid-ph {
-          aspect-ratio: 16/9; display: flex; flex-direction: column;
-          align-items: center; justify-content: center; padding: 20px; text-align: center;
-        }
-
-        .add-note {
-          margin-top: 16px; text-align: center;
-          font-family: 'Dancing Script', cursive; font-size: 1rem;
-          color: rgba(248,187,208,0.5);
-          border: 1px dashed rgba(248,187,208,0.25); border-radius: 12px;
-          padding: 10px 20px; display: inline-block; width: 100%;
-        }
+        .vid-card video { width: 100%; aspect-ratio: 16/9; display: block; }
 
         .balloons-wrap { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 10px 0 30px; }
         .b-wrap { display: flex; flex-direction: column; align-items: center; cursor: pointer; user-select: none; }
@@ -528,21 +423,12 @@ function App() {
         .l-signoff { margin-top: 36px; font-family: 'Dancing Script', cursive; font-size: 1.5rem; color: #E879F9; line-height: 2.2; }
         .l-chioma { font-size: 2.3rem; color: #FF4DB8; display: block; }
 
-        /* Crossword Styles */
-        .crossword-container { padding: 0 24px; }
-        .crossword-grid { display: inline-block; }
-        .crossword-cell.selected { background-color: rgba(255,77,184,0.3) !important; border-color: #FF4DB8 !important; }
-        .crossword-clues { max-width: 300px; }
-
         footer { text-align: center; padding: 60px 24px; background: linear-gradient(0deg, rgba(0,0,0,0.5), transparent); }
 
         @media (max-width: 600px) {
           .letter-card { padding: 28px 20px 24px; }
           .balloon { width: 60px; height: 72px; }
           .balloons-wrap { gap: 14px; }
-          .swipe-btn { width: 40px; height: 40px; font-size: 1.2rem; }
-          .swipe-container { max-width: 100%; }
-          .crossword-cell { width: 28px; height: 28px; }
         }
       `}</style>
 
@@ -604,7 +490,6 @@ function App() {
                 <img 
                   src={item.src} 
                   alt={`Onyinye ${i + 1}`} 
-                  style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "16px" }} 
                 />
               </div>
             ))}
@@ -619,7 +504,7 @@ function App() {
           <div className="vid-grid">
             {[1,2,3,4,5,6,7,8,9,10,11].map(i => (
               <div key={i} className="vid-card">
-                <video src={`/video${i}.mp4`} controls style={{ width: "100%", aspectRatio: "16/9", display: "block" }} />
+                <video src={`./video${i}.mp4`} controls />
               </div>
             ))}
           </div>
@@ -627,9 +512,88 @@ function App() {
 
         <div className="divider">💕 💜 💕</div>
 
-        {/* ── CROSSWORD PUZZLE ── */}
+        {/* ── CROSSWORD PLACEHOLDER ── */}
         <div className="wrap">
-          <CrosswordPuzzle />
+          <h2 className="sec-title">Birthday Crossword 🧩</h2>
+          <p style={{ textAlign: "center", fontFamily: "'Dancing Script', cursive", fontSize: "1.1rem", color: "rgba(248,187,208,0.7)", marginBottom: "24px" }}>
+            See if you can find all these words that describe our amazing Onyinye!
+          </p>
+
+          {/* Static Crossword Image Placeholder */}
+          <div style={{ 
+            width: "100%", 
+            maxWidth: "550px", 
+            margin: "0 auto 32px",
+            aspectRatio: "1", 
+            background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(255,77,184,0.2))",
+            borderRadius: "24px",
+            border: "2px solid rgba(248,187,208,0.3)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "24px",
+            textAlign: "center"
+          }}>
+            <div style={{ fontSize: "2.2rem", marginBottom: "16px" }}>🎉</div>
+            <p style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", fontSize: "1.6rem", marginBottom: "16px" }}>
+              Add Crossword Image Here
+            </p>
+            <p style={{ fontFamily: "'Dancing Script', cursive", color: "#F8BBD0", fontSize: "1.1rem" }}>
+              Replace this with a crossword image containing:
+            </p>
+            <ul style={{ 
+              listStyle: "none", 
+              padding: 0, 
+              marginTop: "20px", 
+              fontFamily: "'Montserrat', sans-serif", 
+              color: "rgba(248,187,208,0.95)",
+              lineHeight: "2.2"
+            }}>
+              <li><strong>ONYINYE</strong></li>
+              <li><strong>KIND</strong></li>
+              <li><strong>INTELLIGENT</strong></li>
+              <li><strong>BEAUTIFUL</strong></li>
+              <li><strong>FASHIONISTA</strong></li>
+              <li><strong>LOVE</strong></li>
+              <li><strong>SUNSHINE</strong></li>
+            </ul>
+          </div>
+
+          {/* Hints */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "32px", justifyContent: "center", alignItems: "flex-start" }}>
+            <div style={{ minWidth: "280px" }}>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", marginBottom: "12px", fontSize: "1.3rem" }}>Across</h3>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  1. The beautiful birthday girl
+                </li>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  2. Your heart is so warm and generous
+                </li>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  3. You are the definition of genuine love
+                </li>
+              </ul>
+            </div>
+            <div style={{ minWidth: "280px" }}>
+              <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", marginBottom: "12px", fontSize: "1.3rem" }}>Down</h3>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  1. Inside and out, you are stunning
+                </li>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  2. Your mind is brilliant and sharp
+                </li>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  3. You have impeccable style
+                </li>
+                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
+                  4. You brighten every room you enter
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div className="divider">✨ ✨ ✨</div>
@@ -727,9 +691,8 @@ function App() {
           </p>
           <div style={{ marginTop: 24, fontSize: "1.6rem", letterSpacing: 10 }}>💕 💜 💕 💜 💕</div>
         </footer>
+
       </div>
     </>
   );
 }
-
-export default App;
