@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const balloons = [
   { emoji: "💕", label: "Kind", message: "Your kindness heals people without them even realising it", c1: "#FF4DB8", c2: "#E91E8C" },
@@ -11,198 +11,140 @@ const balloons = [
 
 const COLORS = ["#FF4DB8","#A855F7","#F472B6","#C084FC","#E879F9","#FB7185","#FF69B4"];
 
-// Swipe Gallery Component
-function SwipeGallery({ items, currentIndex, setCurrentIndex }) {
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+const crosswordCells = {
+  '1,6':{l:'I',n:1},
+  '2,5':{l:'O',n:2},'2,6':{l:'N'},'2,7':{l:'Y'},'2,8':{l:'I'},'2,9':{l:'N'},'2,10':{l:'Y'},'2,11':{l:'E'},
+  '3,2':{l:'B',n:3},'3,3':{l:'E'},'3,4':{l:'A'},'3,5':{l:'U'},'3,6':{l:'T'},'3,7':{l:'I'},'3,8':{l:'F'},'3,9':{l:'U'},'3,10':{l:'L'},
+  '4,6':{l:'E'},'4,10':{l:'S',n:4},
+  '5,6':{l:'L'},'5,10':{l:'U'},
+  '6,6':{l:'L'},'6,7':{l:'L',n:5},'6,9':{l:'K',n:6},'6,10':{l:'N'},
+  '7,2':{l:'F',n:7},'7,3':{l:'A'},'7,4':{l:'S'},'7,5':{l:'H'},'7,6':{l:'I'},'7,7':{l:'O'},'7,8':{l:'N'},'7,9':{l:'I'},'7,10':{l:'S'},'7,11':{l:'T'},'7,12':{l:'A'},
+  '8,6':{l:'G'},'8,7':{l:'V'},'8,9':{l:'N'},'8,10':{l:'H'},
+  '9,6':{l:'E'},'9,7':{l:'E'},'9,9':{l:'D'},'9,10':{l:'I'},
+  '10,6':{l:'N'},'10,10':{l:'N'},
+  '11,6':{l:'T'},'11,10':{l:'E'}
+};
 
-  const minSwipeDistance = 50;
+const crosswordIntersections = new Set(['2,6','3,6','7,6','7,7','7,9','7,10']);
 
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
+const drawCrossword = (canvas) => {
+  if (!canvas) return;
+  const g = canvas.getContext('2d');
+  const C = 38, MX = 32, MY = 54;
+  g.clearRect(0, 0, canvas.width, canvas.height);
 
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
+  g.fillStyle = '#0B0017';
+  g.fillRect(0, 0, canvas.width, canvas.height);
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+  g.strokeStyle = '#5B1E90';
+  g.lineWidth = 2;
+  g.strokeRect(10, 8, 560, 684);
 
-    if (isLeftSwipe && currentIndex < items.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else if (isRightSwipe && currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
+  g.fillStyle = '#FF78C0';
+  g.font = '11px Arial';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  [[16,16],[564,16],[16,692],[564,692]].forEach(([x,y]) => g.fillText('*', x, y));
+
+  g.fillStyle = '#FF78C0';
+  g.font = 'bold 15px Arial';
+  g.textAlign = 'center';
+  g.textBaseline = 'alphabetic';
+  g.fillText("ONYINYE'S BIRTHDAY CROSSWORD", 290, 28);
+  g.fillStyle = '#9B70CC';
+  g.font = '10px Arial';
+  g.fillText('All the beautiful words that describe her', 290, 43);
+
+  g.beginPath(); g.moveTo(22,49); g.lineTo(558,49);
+  g.strokeStyle = '#3C006A'; g.lineWidth = 0.8; g.stroke();
+
+  Object.entries(crosswordCells).forEach(([key, cell]) => {
+    const [r, c] = key.split(',').map(Number);
+    const x = MX + (c - 1) * C;
+    const y = MY + r * C;
+    const isX = crosswordIntersections.has(key);
+
+    g.fillStyle = isX ? '#FFD4F2' : '#ECE0FF';
+    g.fillRect(x, y, C, C);
+
+    g.strokeStyle = isX ? '#D81B60' : '#7E57C2';
+    g.lineWidth = 1;
+    g.strokeRect(x + 0.5, y + 0.5, C - 1, C - 1);
+
+    if (cell.n) {
+      g.fillStyle = '#C2185B';
+      g.font = 'bold 8px Arial';
+      g.textAlign = 'left';
+      g.textBaseline = 'top';
+      g.fillText(String(cell.n), x + 2, y + 2);
     }
-  };
 
-  const nextSlide = () => {
-    if (currentIndex < items.length - 1) setCurrentIndex(currentIndex + 1);
-  };
+    g.fillStyle = '#1A0035';
+    g.font = 'bold 16px Arial';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(cell.l, x + C / 2, y + C / 2 + 1);
+  });
 
-  const prevSlide = () => {
-    if (currentIndex > 0) setCurrentIndex(currentIndex - 1);
-  };
+  g.fillStyle = '#FFD4F2';
+  g.fillRect(22, 550, 10, 10);
+  g.strokeStyle = '#D81B60'; g.lineWidth = 0.8; g.strokeRect(22.5, 550.5, 9, 9);
+  g.fillStyle = '#9B70CC'; g.font = '8px Arial'; g.textAlign = 'left'; g.textBaseline = 'middle';
+  g.fillText('= two words cross here', 36, 555);
 
-  return (
-    <div style={{ width: "100%", margin: "0 auto" }}>
-      <div style={{
-        position: "relative",
-        width: "100%",
-        maxWidth: "600px",
-        margin: "0 auto",
-        overflow: "hidden",
-        borderRadius: "24px",
-        aspectRatio: "3/4",
-        background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(255,77,184,0.2))",
-        border: "2px solid rgba(248,187,208,0.2)"
-      }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <button 
-          onClick={prevSlide} 
-          disabled={currentIndex === 0}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "12px",
-            transform: "translateY(-50%)",
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(255,77,184,0.8)",
-            color: "white",
-            fontSize: "1.5rem",
-            cursor: "pointer",
-            zIndex: 10,
-            transition: "all 0.2s",
-            opacity: currentIndex === 0 ? 0.4 : 1
-          }}
-        >
-          ‹
-        </button>
-        
-        <div style={{
-          display: "flex",
-          transition: "transform 0.3s ease",
-          height: "100%",
-          transform: `translateX(-${currentIndex * 100}%)`
-        }}>
-          {items.map((item, index) => (
-            <div key={index} style={{
-              minWidth: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative"
-            }}>
-              {item.src ? (
-                <img 
-                  src={item.src} 
-                  alt={`Onyinye ${index + 1}`} 
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }} 
-                />
-              ) : (
-                <div style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "24px",
-                  textAlign: "center"
-                }}>
-                  <div style={{ fontSize: "2.2rem", marginBottom: "16px" }}>🌸</div>
-                  <p style={{ fontFamily: "'Dancing Script', cursive", fontSize: "1.5rem", color: "#F8BBD0" }}>Photo {index + 1}</p>
-                  <p style={{ fontSize: "0.9rem", color: "rgba(248,187,208,0.6)", marginTop: "8px" }}>Add your beautiful photo here!</p>
-                </div>
-              )}
-              <div style={{
-                position: "absolute",
-                bottom: "16px",
-                right: "16px",
-                background: "rgba(0,0,0,0.6)",
-                color: "#F8BBD0",
-                padding: "6px 12px",
-                borderRadius: "16px",
-                fontSize: "0.9rem"
-              }}>
-                {index + 1} / {items.length}
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        <button 
-          onClick={nextSlide} 
-          disabled={currentIndex === items.length - 1}
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: "12px",
-            transform: "translateY(-50%)",
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            border: "none",
-            background: "rgba(255,77,184,0.8)",
-            color: "white",
-            fontSize: "1.5rem",
-            cursor: "pointer",
-            zIndex: 10,
-            transition: "all 0.2s",
-            opacity: currentIndex === items.length - 1 ? 0.4 : 1
-          }}
-        >
-          ›
-        </button>
-      </div>
-      
-      <div style={{
-        display: "flex",
-        gap: "8px",
-        justifyContent: "center",
-        marginTop: "20px",
-        flexWrap: "wrap"
-      }}>
-        {items.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            style={{
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-              background: index === currentIndex ? "linear-gradient(135deg, #FF4DB8, #A855F7)" : "rgba(248,187,208,0.3)",
-              border: "none",
-              cursor: "pointer",
-              transition: "all 0.2s",
-              transform: index === currentIndex ? "scale(1.3)" : "scale(1)"
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+  const gB = MY + 13 * C;
+  const sepY = gB + 20;
+  g.beginPath(); g.moveTo(22, sepY); g.lineTo(558, sepY);
+  g.strokeStyle = '#3C006A'; g.lineWidth = 0.8; g.stroke();
+
+  const lY = sepY + 16;
+  g.fillStyle = '#FF78C0'; g.font = 'bold 10px Arial'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+  g.fillText('ACROSS', 28, lY);
+  g.fillText('DOWN', 304, lY);
+
+  [
+    ['2', 'ONYINYE',     'The birthday girl'],
+    ['3', 'BEAUTIFUL',   'Inside and out'],
+    ['7', 'FASHIONISTA', 'Effortless style'],
+  ].forEach(([n, w, d], i) => {
+    const iy = lY + 14 + i * 14;
+    g.fillStyle = '#E91E8C'; g.font = 'bold 8.5px Arial';
+    g.fillText(n + '.', 28, iy);
+    g.fillStyle = '#C8A8E8'; g.font = '8.5px Arial';
+    g.fillText(w + '  —  ' + d, 42, iy);
+  });
+
+  [
+    ['1', 'INTELLIGENT', 'Sharp, brilliant mind'],
+    ['4', 'SUNSHINE',    'Brightens every room'],
+    ['5', 'LOVE',        'Her definition'],
+    ['6', 'KIND',        'Her beautiful heart'],
+  ].forEach(([n, w, d], i) => {
+    const iy = lY + 14 + i * 14;
+    g.fillStyle = '#E91E8C'; g.font = 'bold 8.5px Arial';
+    g.fillText(n + '.', 304, iy);
+    g.fillStyle = '#C8A8E8'; g.font = '8.5px Arial';
+    g.fillText(w + '  —  ' + d, 318, iy);
+  });
+
+  const ftY = lY + 14 + 4 * 14 + 16;
+  g.beginPath(); g.moveTo(22, ftY - 8); g.lineTo(558, ftY - 8);
+  g.strokeStyle = '#3C006A'; g.lineWidth = 0.5; g.stroke();
+
+  g.fillStyle = '#8050A8'; g.font = '8.5px Arial'; g.textAlign = 'center';
+  g.fillText('Happy Birthday Onyinye!   Made with all my love, Chioma', 290, ftY + 5);
+  g.fillStyle = '#5C3880';
+  g.fillText('You are all of these things and so much more', 290, ftY + 19);
+};
 
 export default function App() {
   const [popped, setPopped] = useState(new Set());
   const [letterOpen, setLetterOpen] = useState(false);
   const [confetti, setConfetti] = useState([]);
   const [hearts, setHearts] = useState([]);
-  const [galleryItems, setGalleryItems] = useState([]);
-  const [galleryIndex, setGalleryIndex] = useState(0);
   const [popSound] = useState(new Audio("./ElevenLabs_Tiny_explosion_when_a_balloon_is_pricked_with_a_pin,_surprising_jolt.mp3"));
+
+  const crosswordRef = useRef(null);
 
   useEffect(() => {
     setConfetti(Array.from({ length: 70 }, (_, i) => ({
@@ -222,19 +164,10 @@ export default function App() {
       duration: 8 + Math.random() * 8,
       size: 14 + Math.random() * 22,
     })));
+  }, []);
 
-    // Initialize gallery items with 22 images
-    const items = Array.from({ length: 22 }, (_, i) => {
-      const imgNum = i + 1;
-      let src = "";
-      if (imgNum === 6) {
-        src = "./ontii6.jpeg";
-      } else {
-        src = `./onyii${imgNum}.jpeg`;
-      }
-      return { type: "image", src: src, index: imgNum };
-    });
-    setGalleryItems(items);
+  useEffect(() => {
+    drawCrossword(crosswordRef.current);
   }, []);
 
   const handleBalloonPop = (index) => {
@@ -329,25 +262,37 @@ export default function App() {
 
         .divider { text-align: center; padding: 20px; font-size: 1.4rem; letter-spacing: 12px; opacity: 0.35; }
 
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 32px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
         .g-item {
-          aspect-ratio: 1; border-radius: 16px; overflow: hidden;
+          aspect-ratio: 1; border-radius: 20px; overflow: hidden;
           background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(255,77,184,0.25));
           border: 1.5px solid rgba(248,187,208,0.2);
           display: flex; align-items: center; justify-content: center;
           transition: transform 0.3s, box-shadow 0.3s;
-          cursor: pointer;
         }
-        .g-item:hover { transform: scale(1.05); box-shadow: 0 8px 32px rgba(255,77,184,0.35); }
-        .g-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+        .g-item:hover { transform: scale(1.04); box-shadow: 0 8px 32px rgba(255,77,184,0.35); }
+        .g-item img { width: 100%; height: 100%; object-fit: cover; border-radius: 20px; }
+        .g-ph { text-align: center; padding: 16px; }
 
-        .vid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .add-note {
+          margin-top: 16px; text-align: center;
+          font-family: 'Dancing Script', cursive; font-size: 1rem;
+          color: rgba(248,187,208,0.5);
+          border: 1px dashed rgba(248,187,208,0.25); border-radius: 12px;
+          padding: 10px 20px; display: inline-block; width: 100%;
+        }
+
+        .vid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .vid-card {
           border-radius: 20px; overflow: hidden;
           background: rgba(168,85,247,0.15);
           border: 1.5px solid rgba(248,187,208,0.2);
         }
-        .vid-card video { width: 100%; aspect-ratio: 16/9; display: block; }
+        .vid-card video, .vid-card iframe { width: 100%; aspect-ratio: 16/9; display: block; }
+        .vid-ph {
+          aspect-ratio: 16/9; display: flex; flex-direction: column;
+          align-items: center; justify-content: center; padding: 20px; text-align: center;
+        }
 
         .balloons-wrap { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; padding: 10px 0 30px; }
         .b-wrap { display: flex; flex-direction: column; align-items: center; cursor: pointer; user-select: none; }
@@ -471,26 +416,17 @@ export default function App() {
           <p className="scroll-hint">↓ SCROLL TO CELEBRATE ↓</p>
         </section>
 
-        {/* ── SWIPE PHOTO GALLERY ── */}
+        {/* ── PHOTO GALLERY ── */}
         <div className="wrap">
           <h2 className="sec-title">Her Beautiful World 📸</h2>
-          <SwipeGallery 
-            items={galleryItems} 
-            currentIndex={galleryIndex}
-            setCurrentIndex={setGalleryIndex}
-          />
-          
           <div className="gallery-grid">
-            {galleryItems.map((item, i) => (
-              <div 
-                key={i} 
-                className="g-item" 
-                onClick={() => setGalleryIndex(i)}
-              >
-                <img 
-                  src={item.src} 
-                  alt={`Onyinye ${i + 1}`} 
-                />
+            {[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22].map(i => (
+              <div key={i} className="g-item">
+                {i === 6 ? (
+                  <img src="./ontii6.jpeg" alt={`Onyinye ${i}`} />
+                ) : (
+                  <img src={`./onyii${i}.jpeg`} alt={`Onyinye ${i}`} />
+                )}
               </div>
             ))}
           </div>
@@ -512,87 +448,24 @@ export default function App() {
 
         <div className="divider">💕 💜 💕</div>
 
-        {/* ── CROSSWORD PLACEHOLDER ── */}
+        {/* ── CROSSWORD PUZZLE ── */}
         <div className="wrap">
           <h2 className="sec-title">Birthday Crossword 🧩</h2>
-          <p style={{ textAlign: "center", fontFamily: "'Dancing Script', cursive", fontSize: "1.1rem", color: "rgba(248,187,208,0.7)", marginBottom: "24px" }}>
-            See if you can find all these words that describe our amazing Onyinye!
-          </p>
-
-          {/* Static Crossword Image Placeholder */}
           <div style={{ 
             width: "100%", 
-            maxWidth: "550px", 
-            margin: "0 auto 32px",
-            aspectRatio: "1", 
-            background: "linear-gradient(135deg, rgba(168,85,247,0.2), rgba(255,77,184,0.2))",
+            maxWidth: "600px", 
+            margin: "0 auto",
             borderRadius: "24px",
+            overflow: "hidden",
             border: "2px solid rgba(248,187,208,0.3)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "24px",
-            textAlign: "center"
+            background: '#0B0017'
           }}>
-            <div style={{ fontSize: "2.2rem", marginBottom: "16px" }}>🎉</div>
-            <p style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", fontSize: "1.6rem", marginBottom: "16px" }}>
-              Add Crossword Image Here
-            </p>
-            <p style={{ fontFamily: "'Dancing Script', cursive", color: "#F8BBD0", fontSize: "1.1rem" }}>
-              Replace this with a crossword image containing:
-            </p>
-            <ul style={{ 
-              listStyle: "none", 
-              padding: 0, 
-              marginTop: "20px", 
-              fontFamily: "'Montserrat', sans-serif", 
-              color: "rgba(248,187,208,0.95)",
-              lineHeight: "2.2"
-            }}>
-              <li><strong>ONYINYE</strong></li>
-              <li><strong>KIND</strong></li>
-              <li><strong>INTELLIGENT</strong></li>
-              <li><strong>BEAUTIFUL</strong></li>
-              <li><strong>FASHIONISTA</strong></li>
-              <li><strong>LOVE</strong></li>
-              <li><strong>SUNSHINE</strong></li>
-            </ul>
-          </div>
-
-          {/* Hints */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "32px", justifyContent: "center", alignItems: "flex-start" }}>
-            <div style={{ minWidth: "280px" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", marginBottom: "12px", fontSize: "1.3rem" }}>Across</h3>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  1. The beautiful birthday girl
-                </li>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  2. Your heart is so warm and generous
-                </li>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  3. You are the definition of genuine love
-                </li>
-              </ul>
-            </div>
-            <div style={{ minWidth: "280px" }}>
-              <h3 style={{ fontFamily: "'Playfair Display', serif", color: "#FF4DB8", marginBottom: "12px", fontSize: "1.3rem" }}>Down</h3>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  1. Inside and out, you are stunning
-                </li>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  2. Your mind is brilliant and sharp
-                </li>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  3. You have impeccable style
-                </li>
-                <li style={{ marginBottom: "10px", fontFamily: "'Montserrat', sans-serif", color: "rgba(248,187,208,0.9)", fontSize: "0.95rem" }}>
-                  4. You brighten every room you enter
-                </li>
-              </ul>
-            </div>
+            <canvas
+              ref={crosswordRef}
+              width={580}
+              height={700}
+              style={{ display: 'block', width: '100%', height: 'auto' }}
+            />
           </div>
         </div>
 
@@ -605,34 +478,39 @@ export default function App() {
             Each balloon holds something true about Onyinye — tap to reveal 💕
           </p>
           <div className="balloons-wrap">
-            {balloons.map((balloon, index) => (
-              <div 
-                key={index} 
-                className="b-wrap"
-                onClick={() => handleBalloonPop(index)}
-              >
-                {!popped.has(index) ? (
+            {balloons.map((balloon, i) => (
+              <div key={i} className="b-wrap" onClick={() => handleBalloonPop(i)}>
+                {!popped.has(i) ? (
                   <>
-                    <div 
-                      className="balloon"
-                      style={{
-                        background: `linear-gradient(135deg, ${balloon.c1}, ${balloon.c2})`,
-                        animationDelay: `${index * 0.2}s`
-                      }}
-                    >
-                      {balloon.emoji}
-                    </div>
-                    <div className="b-label">{balloon.label}</div>
+                    <div className="balloon" style={{
+                      background: `linear-gradient(160deg, ${balloon.c1}, ${balloon.c2})`,
+                      animationDelay: `${i * 0.45}s`,
+                    }}>{balloon.emoji}</div>
+                    <span className="b-label">{balloon.label}</span>
                   </>
                 ) : (
-                  <div className="b-reveal">{balloon.message}</div>
+                  <div className="b-reveal">
+                    <div style={{ fontSize: "1.6rem", marginBottom: 8 }}>{balloon.emoji}</div>
+                    {balloon.message}
+                  </div>
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="divider">✦ ✦ ✦</div>
+        {/* ── STARS ── */}
+        <div className="stars-band">
+          <div style={{ fontSize: "3.5rem" }}>🌟</div>
+          <p className="stars-quote">
+            "When I count my blessings, you are counted more than a million times — just like the stars in the sky."
+          </p>
+          <div style={{ marginTop: 20, lineHeight: 2 }}>
+            {Array.from({ length: 35 }, (_, i) => (
+              <span key={i} className="star-burst" style={{ animationDelay: `${i * 0.12}s` }}>⭐</span>
+            ))}
+          </div>
+        </div>
 
         {/* ── LETTER ── */}
         <div className="wrap">
@@ -651,7 +529,7 @@ export default function App() {
                   <p className="l-para">I'm truly grateful for the chance to walk through this life with you. When I say beautiful, I mean inside and out, through and through. Your heart is kind, your heart is beautiful, and your thoughts are intelligent.</p>
                   <p className="l-para">Even though you are my younger sister, I really look up to you. I love and celebrate you on this special day of yours. It's a great privilege to celebrate someone like you on your own special day.</p>
                   <p className="l-para">You're the kind of person everyone wants around, even those who don't deserve it. You have a big heart — the kind the Bible describes when defining love.</p>
-                  <p className="l-para">When I count my blessings, you're counted more than a million times — just like the stars in the sky. I'm beyond grateful for the gift of you.</p>
+                  <p className="l-para">When I count my blessings, you are counted more than a million times — just like the stars in the sky. I'm beyond grateful for the gift of you.</p>
                   <p className="l-para">I'm really proud of how smart you are and how far you've come. I pray you continue to grow stronger in health. May you live long and strong, with absolutely nothing wrong.</p>
                   <span className="l-amen">Amen. 🙏</span>
                 </div>
@@ -664,19 +542,6 @@ export default function App() {
                 <div className="l-deco" style={{ marginTop: 32 }}>💕 ✨ 💜 ✨ 💕</div>
               </div>
             )}
-          </div>
-        </div>
-
-        {/* ── STARS ── */}
-        <div className="stars-band">
-          <div style={{ fontSize: "3.5rem" }}>🌟</div>
-          <p className="stars-quote">
-            "When I count my blessings, you are counted more than a million times — just like the stars in the sky."
-          </p>
-          <div style={{ marginTop: 20, lineHeight: 2 }}>
-            {Array.from({ length: 35 }, (_, i) => (
-              <span key={i} className="star-burst" style={{ animationDelay: `${i * 0.12}s` }}>⭐</span>
-            ))}
           </div>
         </div>
 
